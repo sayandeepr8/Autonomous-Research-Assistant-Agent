@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Research Assistant — AI-Powered Literature Review</title>
+    <meta name="description" content="An autonomous multi-agent AI system that plans research, retrieves academic papers from arXiv, evaluates coverage, and generates structured literature reviews.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="bg-particles" id="bgParticles"></div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="18" stroke="url(#grad1)" stroke-width="2.5"/>
+                        <path d="M14 20C14 16.686 16.686 14 20 14C23.314 14 26 16.686 26 20" stroke="url(#grad1)" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="20" cy="20" r="3" fill="url(#grad1)"/>
+                        <path d="M12 28L16 24" stroke="url(#grad1)" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M28 28L24 24" stroke="url(#grad1)" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M20 10V6" stroke="url(#grad1)" stroke-width="2" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="grad1" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#818cf8"/>
+                                <stop offset="100%" stop-color="#c084fc"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="logo-text">Autonomous Research Assistant</h1>
+                    <p class="logo-sub">Multi-Agent AI · Literature Review · arXiv Integration</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="badge-dot"></span>
+                <span>Powered by Gemini</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Input Section -->
+        <section class="input-section" id="inputSection">
+            <div class="input-card">
+                <div class="input-card-glow"></div>
+                <h2 class="section-title">What would you like to research?</h2>
+                <p class="section-desc">Enter a research topic and our multi-agent system will autonomously plan, retrieve, analyze, and synthesize a comprehensive literature review from arXiv.</p>
+                <div class="input-wrapper">
+                    <textarea id="topicInput" placeholder="e.g., Transformer architectures for time-series forecasting&#10;e.g., Reinforcement learning from human feedback (RLHF) in large language models&#10;e.g., Graph neural networks for drug discovery" rows="3"></textarea>
+                    <button id="startBtn" class="btn-primary" onclick="startResearch()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <span>Begin Research</span>
+                    </button>
+                </div>
+                <div class="quick-topics">
+                    <span class="quick-label">Try:</span>
+                    <button class="quick-chip" onclick="setTopic('Vision transformers for medical image analysis')">Medical Vision Transformers</button>
+                    <button class="quick-chip" onclick="setTopic('Meta-learning and few-shot learning approaches')">Few-Shot Learning</button>
+                    <button class="quick-chip" onclick="setTopic('Neural radiance fields (NeRF) and 3D scene reconstruction')">NeRF & 3D Reconstruction</button>
+                    <button class="quick-chip" onclick="setTopic('Diffusion models for text-to-image generation')">Diffusion Models</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Agent Workflow Visualization -->
+        <section class="workflow-section hidden" id="workflowSection">
+            <h2 class="section-title">Agent Workflow</h2>
+            <div class="agent-pipeline">
+                <div class="agent-node" id="agentPlanner" data-agent="planner">
+                    <div class="agent-icon">🧠</div>
+                    <div class="agent-label">Planner</div>
+                    <div class="agent-status">Waiting</div>
+                    <div class="agent-pulse"></div>
+                </div>
+                <div class="pipeline-connector"><div class="connector-line"></div><div class="connector-arrow">→</div></div>
+                <div class="agent-node" id="agentRetriever" data-agent="retriever">
+                    <div class="agent-icon">📚</div>
+                    <div class="agent-label">Retriever</div>
+                    <div class="agent-status">Waiting</div>
+                    <div class="agent-pulse"></div>
+                </div>
+                <div class="pipeline-connector"><div class="connector-line"></div><div class="connector-arrow">→</div></div>
+                <div class="agent-node" id="agentAnalyzer" data-agent="analyzer">
+                    <div class="agent-icon">🔬</div>
+                    <div class="agent-label">Analyzer</div>
+                    <div class="agent-status">Waiting</div>
+                    <div class="agent-pulse"></div>
+                </div>
+                <div class="pipeline-connector"><div class="connector-line"></div><div class="connector-arrow">→</div></div>
+                <div class="agent-node" id="agentCritic" data-agent="critic">
+                    <div class="agent-icon">🧐</div>
+                    <div class="agent-label">Critic</div>
+                    <div class="agent-status">Waiting</div>
+                    <div class="agent-pulse"></div>
+                </div>
+                <div class="pipeline-connector"><div class="connector-line"></div><div class="connector-arrow">→</div></div>
+                <div class="agent-node" id="agentReporter" data-agent="reporter">
+                    <div class="agent-icon">📝</div>
+                    <div class="agent-label">Reporter</div>
+                    <div class="agent-status">Waiting</div>
+                    <div class="agent-pulse"></div>
+                </div>
+            </div>
+
+            <!-- Iteration indicator -->
+            <div class="iteration-bar hidden" id="iterationBar">
+                <div class="iteration-label">Research Iteration</div>
+                <div class="iteration-badges" id="iterationBadges"></div>
+            </div>
+        </section>
+
+        <!-- Live Activity Feed -->
+        <section class="feed-section hidden" id="feedSection">
+            <h2 class="section-title">Live Activity <span class="live-dot"></span></h2>
+            <div class="activity-feed" id="activityFeed"></div>
+        </section>
+
+        <!-- Results Dashboard -->
+        <section class="results-section hidden" id="resultsSection">
+            <!-- Stats Cards -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card" id="statPapers">
+                    <div class="stat-icon">📄</div>
+                    <div class="stat-value" id="statPapersVal">0</div>
+                    <div class="stat-label">Papers Found</div>
+                </div>
+                <div class="stat-card" id="statIterations">
+                    <div class="stat-icon">🔄</div>
+                    <div class="stat-value" id="statIterationsVal">0</div>
+                    <div class="stat-label">Iterations</div>
+                </div>
+                <div class="stat-card" id="statCoverage">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value" id="statCoverageVal">0</div>
+                    <div class="stat-label">Coverage Score</div>
+                </div>
+                <div class="stat-card" id="statClusters">
+                    <div class="stat-icon">🔗</div>
+                    <div class="stat-value" id="statClustersVal">0</div>
+                    <div class="stat-label">Theme Clusters</div>
+                </div>
+            </div>
+
+            <!-- Results Tabs -->
+            <div class="results-tabs">
+                <button class="tab-btn active" data-tab="report" onclick="switchTab('report')">📝 Literature Review</button>
+                <button class="tab-btn" data-tab="plan" onclick="switchTab('plan')">🧠 Research Plan</button>
+                <button class="tab-btn" data-tab="analysis" onclick="switchTab('analysis')">🔬 Analysis</button>
+                <button class="tab-btn" data-tab="critic" onclick="switchTab('critic')">🧐 Critic Evaluation</button>
+                <button class="tab-btn" data-tab="papers" onclick="switchTab('papers')">📚 Papers</button>
+                <button class="tab-btn" data-tab="log" onclick="switchTab('log')">📋 Agent Log</button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="tab-content active" id="tab-report">
+                <div class="report-container" id="reportContent"></div>
+            </div>
+            <div class="tab-content" id="tab-plan">
+                <div class="plan-container" id="planContent"></div>
+            </div>
+            <div class="tab-content" id="tab-analysis">
+                <div class="analysis-container" id="analysisContent"></div>
+            </div>
+            <div class="tab-content" id="tab-critic">
+                <div class="critic-container" id="criticContent"></div>
+            </div>
+            <div class="tab-content" id="tab-papers">
+                <div class="papers-container" id="papersContent"></div>
+            </div>
+            <div class="tab-content" id="tab-log">
+                <div class="log-container" id="logContent"></div>
+            </div>
+        </section>
+
+        <!-- New Research Button -->
+        <div class="new-research hidden" id="newResearchBtn">
+            <button class="btn-secondary" onclick="resetUI()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                </svg>
+                <span>New Research</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <p>Autonomous Research Assistant &middot; Multi-Agent AI System &middot; arXiv Integration &middot; Powered by Gemini</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
